@@ -25,7 +25,10 @@ RUN $GCC -c -o optiboot.o optiboot.c
 RUN $GCC -Wl,--section-start=.text=0x7e00 -Wl,--section-start=.version=0x7ffe -Wl,--relax -nostartfiles -o optiboot.elf optiboot.o
 RUN $OBJCOPY -j .text -j .data -j .version --set-section-flags .version=alloc,load -O ihex optiboot.elf optiboot.hex
 RUN $OBJDUMP -h -S optiboot.elf > optiboot.lst
+RUN $OBJDUMP -d optiboot.elf > optiboot.asm
 RUN $SIZE -C optiboot.elf
 
 FROM scratch AS export_stage
 COPY --from=build_stage /opt/optiboot-8.0/optiboot/bootloaders/optiboot/optiboot.hex .
+COPY --from=build_stage /opt/optiboot-8.0/optiboot/bootloaders/optiboot/optiboot.lst .
+COPY --from=build_stage /opt/optiboot-8.0/optiboot/bootloaders/optiboot/optiboot.asm .
