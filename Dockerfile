@@ -23,6 +23,7 @@ ENV OBJDUMP="../../../../avr8-gnu-toolchain-linux_x86_64/bin/avr-objdump"
 ENV SIZE="../../../../avr8-gnu-toolchain-linux_x86_64/bin/avr-size"
 
 RUN $GCC -c -o optiboot.o optiboot.c
+# 0x7c00 is in bytes, datasheet is 0x3e00 (in words)
 RUN $GCC -Wl,--section-start=.text=0x7c00 -Wl,--section-start=.version=0x7ffe -Wl,--relax -nostartfiles -o optiboot.elf optiboot.o
 RUN $OBJCOPY -j .text -j .data -j .version --set-section-flags .version=alloc,load -O ihex optiboot.elf optiboot.hex
 RUN $OBJDUMP -h -S optiboot.elf > optiboot.lst
